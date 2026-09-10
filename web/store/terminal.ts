@@ -18,7 +18,8 @@ export type WidgetType =
   | "calendar"
   | "insider"
   | "tv"
-  | "recap";
+  | "recap"
+  | "commodities";
 
 export type WidgetInstance = {
   id: string;

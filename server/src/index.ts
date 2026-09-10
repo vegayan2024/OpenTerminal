@@ -5,11 +5,14 @@ import { portfolioRouter } from "./routes/portfolio.js";
 import { aiRouter } from "./routes/ai.js";
 import { allStats } from "./providers/registry.js";
 
+import { commoditiesRouter } from "./routes/commodities.js";
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.use("/api", marketRouter);
+app.use("/api/commodities", commoditiesRouter);
 app.use("/api/portfolios", portfolioRouter);
 app.use("/api/ai", aiRouter);
 

@@ -1,4 +1,4 @@
-import Database from "better-sqlite3";
+import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,8 +7,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const dataDir = join(root, "data");
 mkdirSync(dataDir, { recursive: true });
 
-export const db = new Database(join(dataDir, "terminal.db"));
-db.pragma("journal_mode = WAL");
+export const db = new DatabaseSync(join(dataDir, "terminal.db"));
+db.exec("PRAGMA journal_mode = WAL;");
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS portfolios (

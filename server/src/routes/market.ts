@@ -12,6 +12,7 @@ import * as news from "../providers/news.js";
 import * as econcalendar from "../providers/econcalendar.js";
 import * as finra from "../providers/finra.js";
 import * as secedgar from "../providers/secedgar.js";
+import * as chinaMarket from "../providers/chinaMarket.js";
 
 export const marketRouter = Router();
 
@@ -113,6 +114,15 @@ async function getQuotes(symbols: string[]): Promise<yahoo.Quote[]> {
 
   const fetched = new Map<string, yahoo.Quote>();
   let remaining = missing;
+
+  const chinaSymbols = remaining.filter((s) => chinaMarket.isChinaSymbol(s));
+  if (chinaSymbols.length > 0) {
+    const results = await Promise.allSettled(chinaSymbols.map((s) => chinaMarket.quote(s)));
+    results.forEach((r, i) => {
+      if (r.status === "fulfilled") fetched.set(chinaSymbols[i], r.value);
+    });
+    remaining = remaining.filter((s) => !fetched.has(s));
+  }
 
   const cryptoSymbols = remaining.filter((s) => binance.CRYPTO_SYMBOLS.has(s));
   if (cryptoSymbols.length > 0) {
@@ -220,7 +230,9 @@ marketRouter.get("/history/:symbol", async (req, res) => {
   const rangeKey = String(req.query.range ?? "6M");
   try {
     const data = await cached(`history:${symbol}:${rangeKey}`, HISTORY_TTL, () =>
-      binance.CRYPTO_SYMBOLS.has(symbol)
+      chinaMarket.isChinaSymbol(symbol)
+        ? chinaMarket.candles(symbol, rangeKey)
+        : binance.CRYPTO_SYMBOLS.has(symbol)
         ? binance.history(symbol, rangeKey)
         : isVix(symbol)
         ? vixHistory(rangeKey)
@@ -256,6 +268,11 @@ function yahooRange(rangeKey: string): { range: string; interval: string } {
 marketRouter.get("/search", async (req, res) => {
   const q = String(req.query.q ?? "").trim();
   if (!q) return res.json([]);
+  if (chinaMarket.isChinaSymbol(q)) {
+    return res.json([
+      { symbol: q, name: `A股代码 ${q}`, exchange: q.startsWith("6") ? "SSE" : "SZSE", type: "Stock" }
+    ]);
+  }
   try {
     const data = await cached(`search:${q.toLowerCase()}`, 300_000, () =>
       withFallback([

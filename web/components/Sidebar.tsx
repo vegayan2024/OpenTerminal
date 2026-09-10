@@ -18,6 +18,7 @@ const ITEMS: Array<{ type: WidgetType; label: string; key: string }> = [
   { type: "insider", label: "INSIDER", key: "" },
   { type: "tv", label: "LIVE TV", key: "" },
   { type: "recap", label: "MARKET RECAP", key: "" },
+  { type: "commodities", label: "化工品周期", key: "⌥0" },
 ];
 
 export default function Sidebar() {

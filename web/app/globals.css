@@ -7,8 +7,9 @@
   --border: #262626;
   --amber: #ff9900;
   --amber-dim: #b36b00;
-  --up: #00c853;
-  --down: #ff3d3d;
+  /* 中国市场习惯：红涨绿跌 */
+  --up: #ff3d3d;
+  --down: #00c853;
   --text: #d9d9d9;
   --text-dim: #808080;
 }
