@@ -12,7 +12,7 @@ import sys
 import json
 import logging
 from pathlib import Path
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from datetime import datetime, timedelta
 
@@ -24,7 +24,6 @@ if str(WORKSPACE_ROOT / "scripts") not in sys.path:
 try:
     from financial_data_provider import data_hub
 except ImportError:
-    # 兼容回退
     data_hub = None
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] [ChinaBridge] %(message)s")
@@ -106,7 +105,7 @@ class ChinaDataHandler(BaseHTTPRequestHandler):
         # 4. K线时序数据 (日K/周K)
         if path == "/api/candles":
             symbol = query.get("symbol", ["600519"])[0]
-            period = query.get("period", ["daily"])[0]
+            period = query.get("period", ["6M"])[0]
             clean_code = symbol.split(".")[0]
             candles = self._fetch_candles(clean_code, period)
             self._send_json({"symbol": clean_code, "period": period, "candles": candles})
@@ -120,34 +119,77 @@ class ChinaDataHandler(BaseHTTPRequestHandler):
 
         self._send_json({"error": "Not Found"}, status=404)
 
-    def _fetch_candles(self, code: str, period: str = "daily"):
+    def _fetch_candles(self, code: str, period: str = "6M"):
         """获取K线，格式化为 lightweight-charts 标准 { time: 'YYYY-MM-DD', open, high, low, close, volume }"""
-        # 1. 尝试使用 AkShare
+        clean_code = code.split(".")[0]
+        days_map = {
+            "1D": 30,
+            "5D": 60,
+            "1M": 90,
+            "6M": 240,
+            "YTD": 300,
+            "1Y": 365,
+            "5Y": 365 * 5,
+            "MAX": 365 * 10,
+        }
+        days = days_map.get(period.upper(), 365)
+        scale_freq = "weekly" if days > 365 * 3 else "daily"
+
+        # 1. 优先尝试 AKShare
         try:
             import akshare as ak
-            market = "sh" if code.startswith("6") else "sz"
-            start_date = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
+            start_date = (datetime.now() - timedelta(days=days)).strftime("%Y%m%d")
             end_date = datetime.now().strftime("%Y%m%d")
             
-            # 复权日K
-            df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=start_date, end_date=end_date, adjust="qfq")
+            is_index = clean_code.startswith("000") and clean_code in ["000001", "000300", "000905", "000852", "000016"]
+            if is_index:
+                df = ak.stock_zh_index_daily(symbol=f"sh{clean_code}")
+            else:
+                df = ak.stock_zh_a_hist(symbol=clean_code, period=scale_freq, start_date=start_date, end_date=end_date, adjust="qfq")
+
             if df is not None and not df.empty:
                 records = []
                 for _, row in df.iterrows():
-                    d_str = str(row["日期"])[:10]
+                    d_str = str(row.get("date", row.get("日期", "")))[:10]
                     records.append({
                         "time": d_str,
-                        "open": float(row["开盘"]),
-                        "high": float(row["最高"]),
-                        "low": float(row["最低"]),
-                        "close": float(row["收盘"]),
-                        "volume": float(row["成交量"])
+                        "open": float(row.get("open", row.get("开盘", 0))),
+                        "high": float(row.get("high", row.get("最高", 0))),
+                        "low": float(row.get("low", row.get("最低", 0))),
+                        "close": float(row.get("close", row.get("收盘", 0))),
+                        "volume": float(row.get("volume", row.get("成交量", 0)))
                     })
-                return records
+                if records:
+                    return records
         except Exception as e:
-            logger.warning(f"AKShare candles failed: {e}")
+            logger.warning(f"AKShare candles failed ({clean_code}): {e}")
 
-        # 兜底返回空列表
+        # 2. 降级备用通道：新浪直连快速 K 线通道
+        try:
+            import urllib.request
+            prefix = "sh" if clean_code.startswith("6") or clean_code in ["000001", "000300"] else "sz"
+            symbol_with_market = f"{prefix}{clean_code}"
+            datalen = min(days, 800)
+            url = f"http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol={symbol_with_market}&scale=240&ma=no&datalen={datalen}"
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=4) as resp:
+                raw = resp.read().decode("gbk", errors="ignore")
+                data = json.loads(raw)
+                if isinstance(data, list) and len(data) > 0:
+                    records = []
+                    for item in data:
+                        records.append({
+                            "time": str(item["day"])[:10],
+                            "open": float(item["open"]),
+                            "high": float(item["high"]),
+                            "low": float(item["low"]),
+                            "close": float(item["close"]),
+                            "volume": float(item["volume"])
+                        })
+                    return records
+        except Exception as e:
+            logger.warning(f"Sina direct candles failed ({clean_code}): {e}")
+
         return []
 
     def _fetch_news(self):
@@ -171,8 +213,8 @@ class ChinaDataHandler(BaseHTTPRequestHandler):
 
 def run_server():
     server_address = ("127.0.0.1", PORT)
-    httpd = HTTPServer(server_address, ChinaDataHandler)
-    logger.info(f"[*] 中国市场微服务运行在 http://127.0.0.1:{PORT}")
+    httpd = ThreadingHTTPServer(server_address, ChinaDataHandler)
+    logger.info(f"[*] 中国市场多线程微服务运行在 http://127.0.0.1:{PORT}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
