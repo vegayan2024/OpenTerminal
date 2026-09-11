@@ -57,27 +57,27 @@ export default function ScreenerWidget() {
     <div>
       <div className="flex gap-2 p-1 flex-wrap items-center">
         <select value={sector} onChange={(e) => setSector(e.target.value)}>
-          <option value="">All sectors</option>
+          <option value="">全部行业板块</option>
           {sectors.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
-        <input className="w-20" placeholder="Chg% min" value={changeMin} onChange={(e) => setChangeMin(e.target.value)} />
-        <input className="w-24" placeholder="MCap min ($B)" value={marketCapMinB} onChange={(e) => setMarketCapMinB(e.target.value)} />
-        <input className="w-24" placeholder="Vol min (M)" value={volumeMinM} onChange={(e) => setVolumeMinM(e.target.value)} />
-        <span className="dim ml-auto">{isLoading ? "…" : `${data.length} results`}</span>
+        <input className="w-20" placeholder="涨跌幅下限%" value={changeMin} onChange={(e) => setChangeMin(e.target.value)} />
+        <input className="w-28" placeholder="市值下限 (亿元)" value={marketCapMinB} onChange={(e) => setMarketCapMinB(e.target.value)} />
+        <input className="w-28" placeholder="成交量下限 (万手)" value={volumeMinM} onChange={(e) => setVolumeMinM(e.target.value)} />
+        <span className="dim ml-auto">{isLoading ? "正在检索…" : `共 ${data.length} 只标的`}</span>
       </div>
-      {error && <div className="p-2 down">Error: {(error as Error).message}</div>}
+      {error && <div className="p-2 down">选股数据异常: {(error as Error).message}</div>}
       <table className="data-table">
         <thead>
           <tr>
-            {th("symbol", "Sym")}
-            <th>Name</th>
-            <th>Sector</th>
-            {th("price", "Last")}
-            {th("changePercent", "Chg%")}
-            {th("volume", "Vol")}
-            {th("marketCap", "MCap")}
+            {th("symbol", "代码")}
+            <th>证券名称</th>
+            <th>所属行业</th>
+            {th("price", "最新价")}
+            {th("changePercent", "涨跌幅")}
+            {th("volume", "成交量")}
+            {th("marketCap", "总市值")}
           </tr>
         </thead>
         <tbody>

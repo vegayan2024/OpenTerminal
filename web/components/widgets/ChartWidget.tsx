@@ -241,11 +241,19 @@ export default function ChartWidget({ widget }: { widget: WidgetInstance }) {
           </button>
         ))}
         <span className="w-2" />
-        {CHART_TYPES.map((t) => (
-          <button key={t} className={`term-btn ${chartType === t ? "active" : ""}`} onClick={() => setChartType(t)}>
-            {t.toUpperCase()}
-          </button>
-        ))}
+        {CHART_TYPES.map((t) => {
+          const typeNames: Record<string, string> = {
+            candles: "K线",
+            bars: "柱线",
+            line: "折线",
+            area: "面积",
+          };
+          return (
+            <button key={t} className={`term-btn ${chartType === t ? "active" : ""}`} onClick={() => setChartType(t)}>
+              {typeNames[t] || t.toUpperCase()}
+            </button>
+          );
+        })}
         <span className="w-2" />
         {INDICATORS.map((ind) => (
           <button key={ind} className={`term-btn ${active.has(ind) ? "active" : ""}`} onClick={() => toggleIndicator(ind)}>
@@ -253,16 +261,16 @@ export default function ChartWidget({ widget }: { widget: WidgetInstance }) {
           </button>
         ))}
       </div>
-      {error && <div className="p-2 down">Error: {(error as Error).message}</div>}
+      {error && <div className="p-2 down">走势数据异常: {(error as Error).message}</div>}
       <div className="relative flex-1 min-h-0">
         {legend && (
           <div className="absolute top-1 left-2 z-10 flex flex-col gap-0.5 text-[11px] pointer-events-none bg-[rgba(10,10,10,0.7)] px-2 py-1 rounded max-w-[95%]">
             <div className="flex gap-3">
-              <span className="dim">O <span className="text-[var(--text)]">{fmt(legend.open)}</span></span>
-              <span className="dim">H <span className="up">{fmt(legend.high)}</span></span>
-              <span className="dim">L <span className="down">{fmt(legend.low)}</span></span>
-              <span className="dim">C <span className={legend.close >= legend.open ? "up" : "down"}>{fmt(legend.close)}</span></span>
-              <span className="dim">Vol <span className="text-[var(--text)]">{fmtBig(legend.volume)}</span></span>
+              <span className="dim">开 <span className="text-[var(--text)]">{fmt(legend.open)}</span></span>
+              <span className="dim">高 <span className="up">{fmt(legend.high)}</span></span>
+              <span className="dim">低 <span className="down">{fmt(legend.low)}</span></span>
+              <span className="dim">收 <span className={legend.close >= legend.open ? "up" : "down"}>{fmt(legend.close)}</span></span>
+              <span className="dim">成交量 <span className="text-[var(--text)]">{fmtBig(legend.volume)}</span></span>
             </div>
             {indicatorRows.length > 0 && (
               <div className="flex gap-3 flex-wrap">

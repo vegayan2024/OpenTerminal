@@ -35,21 +35,26 @@ export default function WatchlistWidget() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Add ticker…"
+          placeholder="添加A股代码 (如 600519/000001)…"
           className="flex-1"
         />
-        <button className="term-btn" type="submit">+</button>
+        <button className="term-btn" type="submit">添加</button>
       </form>
       <table className="data-table">
         <thead>
-          <tr><th>Sym</th><th>Last</th><th>Chg%</th><th>Vol</th><th></th></tr>
+          <tr><th>代码/名称</th><th>最新价</th><th>涨跌幅</th><th>成交量</th><th></th></tr>
         </thead>
         <tbody>
           {watchlist.map((sym) => {
             const q = data.find((d) => d.symbol === sym);
             return (
               <tr key={sym} onClick={() => setActiveSymbol(sym)}>
-                <td className="font-bold">{sym}</td>
+                <td className="font-bold">
+                  {sym}
+                  {q?.name && q.name !== sym && (
+                    <span className="dim text-[10px] font-normal ml-1.5">{q.name}</span>
+                  )}
+                </td>
                 <td><Flash value={q?.price}>{fmt(q?.price)}</Flash></td>
                 <td className={pctClass(q?.changePercent)}>
                   <Flash value={q?.changePercent}>{fmt(q?.changePercent)}%</Flash>

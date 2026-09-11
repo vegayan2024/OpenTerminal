@@ -29,12 +29,18 @@ function Clock({ tz, label }: { tz: string; label: string }) {
   );
 }
 
-function marketStateNY(): { label: string; open: boolean } {
-  const ny = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
-  const day = ny.getDay();
-  const mins = ny.getHours() * 60 + ny.getMinutes();
-  const open = day >= 1 && day <= 5 && mins >= 570 && mins < 960; // 09:30–16:00
-  return { label: open ? "NYSE OPEN" : "NYSE CLOSED", open };
+function marketStateCN(): { label: string; state: "open" | "auction" | "pause" | "closed" } {
+  const bj = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Shanghai" }));
+  const day = bj.getDay();
+  const mins = bj.getHours() * 60 + bj.getMinutes();
+
+  if (day >= 1 && day <= 5) {
+    if (mins >= 555 && mins < 565) return { label: "A股集合竞价", state: "auction" };
+    if (mins >= 570 && mins <= 690) return { label: "A股连续竞价中", state: "open" };
+    if (mins > 690 && mins < 780) return { label: "A股午间休市", state: "pause" };
+    if (mins >= 780 && mins <= 900) return { label: "A股连续竞价中", state: "open" };
+  }
+  return { label: "A股已收盘", state: "closed" };
 }
 
 export default function TopBar() {
@@ -46,30 +52,30 @@ export default function TopBar() {
     refetchInterval: 30_000,
   });
 
-  const market = marketStateNY();
-  const healthy = status?.providers.filter((p) => p.ok > 0) ?? [];
+  const market = marketStateCN();
+  const statusColor =
+    market.state === "open" ? "up" : market.state === "auction" ? "amber" : "dim";
 
   return (
     <header className="flex items-center gap-4 px-3 h-8 bg-[var(--panel-2)] border-b border-[var(--border)] text-[11px] shrink-0">
-      <span className="amber font-bold tracking-widest">OPENTERMINAL</span>
-      <span className={market.open ? "up" : "down"}>● {market.label}</span>
-      <Clock tz="America/New_York" label="NY" />
-      <Clock tz="Europe/Rome" label="MIL" />
-      <Clock tz="Europe/London" label="LDN" />
-      <Clock tz="Asia/Tokyo" label="TYO" />
+      <span className="amber font-bold tracking-widest">OPENTERMINAL 中国</span>
+      <span className={statusColor}>● {market.label}</span>
+      <Clock tz="Asia/Shanghai" label="北京" />
+      <Clock tz="America/New_York" label="纽约" />
+      <Clock tz="Europe/London" label="伦敦" />
+      <Clock tz="Asia/Tokyo" label="东京" />
       <button
-        className="term-btn flex-1 max-w-md text-left dim"
+        className="term-btn flex-1 max-w-md text-left dim hover:border-[var(--amber)]"
         onClick={() => setCommandOpen(true)}
       >
-        {activeSymbol} — search symbol… <span className="float-right">⌘K</span>
+        <span className="text-[var(--text)] font-semibold">{activeSymbol}</span>
+        <span className="ml-2">输入A股代码/拼音/名称快速查找…</span>
+        <span className="float-right text-[var(--amber)]">⌘K / Ctrl+K</span>
       </button>
       <span className="dim ml-auto">
-        feeds:{" "}
-        {healthy.length > 0
-          ? healthy.map((p) => `${p.name} ${p.lastLatencyMs ?? "—"}ms`).join(" · ")
-          : "connecting…"}
+        数据源: 同花顺(THS) · TuShare · AkShare
       </span>
-      <span className={status?.ai ? "up" : "dim"}>AI {status?.ai ? "●" : "○"}</span>
+      <span className={status?.ai ? "up" : "dim"}>AI 引擎 {status?.ai ? "●" : "○"}</span>
     </header>
   );
 }

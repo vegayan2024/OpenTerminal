@@ -52,6 +52,7 @@ const DEFAULT_WIDGETS: WidgetInstance[] = [
   { id: "w-chart", type: "chart", linked: true },
   { id: "w-quote", type: "quote", linked: true },
   { id: "w-watchlist", type: "watchlist", linked: false },
+  { id: "w-commodities", type: "commodities", linked: false },
   { id: "w-news", type: "news", linked: true },
   { id: "w-macro", type: "macro", linked: false },
 ];
@@ -60,8 +61,9 @@ const DEFAULT_LAYOUT: LayoutItem[] = [
   { i: "w-chart", x: 0, y: 0, w: 7, h: 12 },
   { i: "w-quote", x: 7, y: 0, w: 5, h: 6 },
   { i: "w-watchlist", x: 7, y: 6, w: 5, h: 6 },
-  { i: "w-news", x: 0, y: 12, w: 7, h: 7 },
-  { i: "w-macro", x: 7, y: 12, w: 5, h: 7 },
+  { i: "w-commodities", x: 0, y: 12, w: 7, h: 11 },
+  { i: "w-macro", x: 7, y: 12, w: 5, h: 6 },
+  { i: "w-news", x: 7, y: 18, w: 5, h: 5 },
 ];
 
 const SIZE_BY_TYPE: Record<WidgetType, { w: number; h: number }> = {
@@ -86,10 +88,10 @@ const SIZE_BY_TYPE: Record<WidgetType, { w: number; h: number }> = {
 export const useTerminal = create<TerminalState>()(
   persist(
     (set) => ({
-      activeSymbol: "AAPL",
+      activeSymbol: "600519",
       widgets: DEFAULT_WIDGETS,
       layout: DEFAULT_LAYOUT,
-      watchlist: ["AAPL", "MSFT", "NVDA", "TSLA", "AMZN", "GOOGL", "META", "SPY"],
+      watchlist: ["600519", "300750", "002594", "601318", "000858", "600036", "601899", "600900", "000001", "399001", "399006"],
       commandOpen: false,
       setActiveSymbol: (s) => set({ activeSymbol: s.toUpperCase() }),
       setCommandOpen: (open) => set({ commandOpen: open }),
@@ -124,7 +126,7 @@ export const useTerminal = create<TerminalState>()(
       removeFromWatchlist: (s) => set((st) => ({ watchlist: st.watchlist.filter((x) => x !== s) })),
       resetWorkspace: () => set({ widgets: DEFAULT_WIDGETS, layout: DEFAULT_LAYOUT }),
     }),
-    { name: "openterminal-workspace" }
+    { name: "openterminal-china-workspace-v3" }
   )
 );
 

@@ -20,16 +20,15 @@ type InsiderTransaction = {
   sharesOwnedAfter: number | null;
 };
 
-// SEC's single-letter transaction codes, the ones that actually show up in practice.
 const CODE_LABEL: Record<string, string> = {
-  P: "Open market buy",
-  S: "Open market sale",
-  A: "Grant/award",
-  M: "Option exercise",
-  G: "Gift",
-  F: "Tax withholding",
-  C: "Conversion",
-  D: "Disposition to issuer",
+  P: "二级市场增持",
+  S: "二级市场减持",
+  A: "股权激励授予",
+  M: "期权行权",
+  G: "无偿赠与",
+  F: "税费代扣",
+  C: "可转债转股",
+  D: "向发行人转让",
 };
 
 export default function InsiderWidget({ widget }: { widget: WidgetInstance }) {
@@ -40,22 +39,22 @@ export default function InsiderWidget({ widget }: { widget: WidgetInstance }) {
     staleTime: 3_600_000,
   });
 
-  if (error) return <div className="p-2 down">Error: {(error as Error).message}</div>;
-  if (isLoading) return <div className="p-2 dim">Loading insider transactions for {symbol}…</div>;
+  if (error) return <div className="p-2 down">股东增减持数据异常: {(error as Error).message}</div>;
+  if (isLoading) return <div className="p-2 dim">正在获取 {symbol} 重要股东增减持记录…</div>;
 
   return (
     <div>
       <table className="data-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Insider</th>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Shares</th>
-            <th>Price</th>
-            <th>Value</th>
-            <th>Owned After</th>
+            <th>变动日期</th>
+            <th>变动人</th>
+            <th>职务/身份</th>
+            <th>变动类型</th>
+            <th>变动股数</th>
+            <th>成交均价</th>
+            <th>变动金额</th>
+            <th>变动后持股</th>
           </tr>
         </thead>
         <tbody>

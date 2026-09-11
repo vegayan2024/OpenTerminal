@@ -9,8 +9,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+    <html lang="zh-CN" className="notranslate" translate="no" suppressHydrationWarning>
+      <head>
+        <meta name="google" content="notranslate" />
+      </head>
+      <body className="notranslate" translate="no" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

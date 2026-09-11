@@ -64,10 +64,10 @@ function EconomicTab() {
     <div>
       <div className="flex gap-1 p-1 items-center flex-wrap">
         <button className={`term-btn ${minImpact === "medium" ? "active" : ""}`} onClick={() => setMinImpact("medium")}>
-          HIGH+MED
+          重大与高影响力
         </button>
         <button className={`term-btn ${minImpact === "all" ? "active" : ""}`} onClick={() => setMinImpact("all")}>
-          ALL
+          全部事件
         </button>
         <span className="w-2" />
         <select
@@ -85,12 +85,12 @@ function EconomicTab() {
       <table className="data-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Ccy</th>
-            <th>Event</th>
-            <th>Forecast</th>
-            <th>Previous</th>
-            <th>Actual</th>
+            <th>公布时间</th>
+            <th>地区</th>
+            <th>经济指标与事件</th>
+            <th>市场预期</th>
+            <th>前值</th>
+            <th>实际公布</th>
           </tr>
         </thead>
         <tbody>
@@ -209,10 +209,10 @@ function EarningsTab() {
     <table className="data-table">
       <thead>
         <tr>
-          <th>Sym</th>
-          <th>Last Earnings</th>
-          <th>Next Earnings</th>
-          <th>EPS Est.</th>
+          <th>证券代码</th>
+          <th>上期财报日期</th>
+          <th>预计下期披露</th>
+          <th>预期每股收益</th>
         </tr>
       </thead>
       <tbody>
@@ -221,7 +221,7 @@ function EarningsTab() {
             <tr
               onClick={() => setExpanded(expanded === e.symbol ? null : e.symbol)}
               className="cursor-pointer"
-              title="Click for earnings history"
+              title="点击查看历史财报数据"
             >
               <td className="!text-left text-[var(--text)] font-bold underline decoration-1">{e.symbol}</td>
               <td className="dim">{fmtDate(e.lastEarningsDate)}</td>
@@ -240,7 +240,7 @@ function EarningsTab() {
         {sorted.length === 0 && (
           <tr>
             <td colSpan={4} className="dim p-3">
-              No upcoming earnings data for your watchlist.
+              当前自选股暂无待披露财报日程
             </td>
           </tr>
         )}
@@ -256,10 +256,10 @@ export default function CalendarWidget() {
     <div>
       <div className="flex gap-1 p-1">
         <button className={`term-btn ${tab === "econ" ? "active" : ""}`} onClick={() => setTab("econ")}>
-          ECONOMIC
+          宏观财经日历
         </button>
         <button className={`term-btn ${tab === "earnings" ? "active" : ""}`} onClick={() => setTab("earnings")}>
-          EARNINGS
+          财报披露日程
         </button>
       </div>
       {tab === "econ" ? <EconomicTab /> : <EarningsTab />}

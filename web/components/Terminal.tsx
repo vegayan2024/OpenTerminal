@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TopBar from "./TopBar";
 import Sidebar from "./Sidebar";
 import Workspace from "./Workspace";
@@ -8,8 +8,13 @@ import CommandPalette from "./CommandPalette";
 import { useTerminal } from "../store/terminal";
 
 export default function Terminal() {
+  const [mounted, setMounted] = useState(false);
   const setCommandOpen = useTerminal((s) => s.setCommandOpen);
   const addWidget = useTerminal((s) => s.addWidget);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -40,6 +45,14 @@ export default function Terminal() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [setCommandOpen, addWidget]);
+
+  if (!mounted) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[var(--bg)] text-[var(--text-dim)] font-mono text-sm">
+        正在初始化 OpenTerminal 量化终端...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen">

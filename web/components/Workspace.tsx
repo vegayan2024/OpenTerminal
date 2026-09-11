@@ -92,10 +92,22 @@ function SymbolTag({ widget, activeSymbol }: { widget: WidgetInstance; activeSym
 }
 
 const TITLES: Record<string, string> = {
-  quote: "Quote", chart: "Chart", watchlist: "Watchlist", news: "News",
-  heatmap: "Heatmap", screener: "Screener", crypto: "Crypto",
-  macro: "Macro / Indexes", options: "Option Chain", portfolio: "Portfolio", ai: "AI Assistant",
-  calendar: "Calendar", insider: "Insider Transactions", tv: "Live TV", recap: "Market Recap",
+  quote: "分时/五档行情",
+  chart: "专业K线图表",
+  watchlist: "自选股监控",
+  news: "7x24 财经快讯",
+  heatmap: "全市场/行业热力图",
+  screener: "A股智能选股器",
+  crypto: "数字资产",
+  macro: "宏观经济与大盘指数",
+  options: "期权T型报价",
+  portfolio: "模拟投资组合",
+  ai: "AI 投研助手",
+  calendar: "财经日历与财报",
+  insider: "重要股东及高管增减持",
+  tv: "财经直播",
+  recap: "每日市场复盘",
+  commodities: "化工品周期数据库 (兴业证券 20 年)",
 };
 
 export default function Workspace() {
@@ -123,7 +135,7 @@ export default function Workspace() {
           <div className="terminal-panel">
             <div className="panel-title">
               <span>
-                {TITLES[w.type]}
+                {TITLES[w.type] || w.type}
                 {symbolAware.has(w.type) && <SymbolTag widget={w} activeSymbol={activeSymbol} />}
               </span>
               <span className="flex gap-2 items-center">

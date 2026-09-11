@@ -35,9 +35,9 @@ export default function RecapWidget() {
   return (
     <div>
       <div className="px-2 py-1 flex justify-between items-baseline">
-        <span className="dim text-[10px] uppercase">Market Recap</span>
+        <span className="dim text-[10px] uppercase">每日市场复盘</span>
         <span className="dim text-[9px]">
-          Updated {new Date(data.updatedAt).toLocaleTimeString()}
+          更新时间 {new Date(data.updatedAt).toLocaleTimeString()}
         </span>
       </div>
 
@@ -46,9 +46,9 @@ export default function RecapWidget() {
       <table className="data-table">
         <thead>
           <tr>
-            <th>Index</th>
-            <th>Last</th>
-            <th>Chg%</th>
+            <th>基准指数</th>
+            <th>最新点位</th>
+            <th>涨跌幅</th>
           </tr>
         </thead>
         <tbody>
@@ -65,7 +65,7 @@ export default function RecapWidget() {
           ))}
           {data.vix !== null && (
             <tr className="cursor-pointer" onClick={() => setActiveSymbol("^VIX")}>
-              <td>VIX</td>
+              <td>恐慌指数 (VIX)</td>
               <td colSpan={2}>
                 <Flash value={data.vix} className="amber">
                   {fmt(data.vix, 2)}
@@ -78,10 +78,10 @@ export default function RecapWidget() {
 
       <div className="grid grid-cols-2 gap-x-2 px-2 py-1">
         <div>
-          <div className="dim text-[10px] uppercase mb-1">Top gainers</div>
+          <div className="dim text-[10px] uppercase mb-1">涨幅榜领涨标的</div>
           {data.gainers.map((r) => (
             <div key={r.symbol} className="flex justify-between cursor-pointer hover:bg-[#161616]" onClick={() => setActiveSymbol(r.symbol)}>
-              <span className="truncate mr-1">{r.symbol}</span>
+              <span className="truncate mr-1 font-mono font-semibold">{r.symbol}</span>
               <span className={pctClass(r.changePercent)}>
                 <Flash value={r.changePercent}>{fmt(r.changePercent)}%</Flash>
               </span>
@@ -89,10 +89,10 @@ export default function RecapWidget() {
           ))}
         </div>
         <div>
-          <div className="dim text-[10px] uppercase mb-1">Top losers</div>
+          <div className="dim text-[10px] uppercase mb-1">跌幅榜领跌标的</div>
           {data.losers.map((r) => (
             <div key={r.symbol} className="flex justify-between cursor-pointer hover:bg-[#161616]" onClick={() => setActiveSymbol(r.symbol)}>
-              <span className="truncate mr-1">{r.symbol}</span>
+              <span className="truncate mr-1 font-mono font-semibold">{r.symbol}</span>
               <span className={pctClass(r.changePercent)}>
                 <Flash value={r.changePercent}>{fmt(r.changePercent)}%</Flash>
               </span>
@@ -102,7 +102,7 @@ export default function RecapWidget() {
       </div>
 
       <div className="px-2 py-1 border-t border-[#161616]">
-        <div className="dim text-[10px] uppercase mb-1">Sector performance</div>
+        <div className="dim text-[10px] uppercase mb-1">行业板块涨跌表现</div>
         {data.sectors.map((s) => (
           <div key={s.sector} className="flex justify-between">
             <span className="truncate mr-1">{s.sector}</span>
@@ -112,7 +112,7 @@ export default function RecapWidget() {
       </div>
 
       <div className="border-t border-[#161616]">
-        <div className="dim text-[10px] uppercase px-2 pt-1">Headlines</div>
+        <div className="dim text-[10px] uppercase px-2 pt-1">市场重磅头条资讯</div>
         {data.news.map((n, i) => (
           <a
             key={i}

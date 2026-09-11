@@ -24,7 +24,7 @@ function Sparkline({ data }: { data: number[] }) {
   const upTrend = data[data.length - 1] >= data[0];
   return (
     <svg width={w} height={h}>
-      <polyline points={pts} fill="none" stroke={upTrend ? "#00c853" : "#ff3d3d"} strokeWidth={1} />
+      <polyline points={pts} fill="none" stroke={upTrend ? "#ff3d3d" : "#00c853"} strokeWidth={1} />
     </svg>
   );
 }
@@ -42,20 +42,20 @@ export default function CryptoWidget() {
     refetchInterval: 30_000,
   });
 
-  if (error) return <div className="p-2 down">Error: {(error as Error).message}</div>;
+  if (error) return <div className="p-2 down">行情获取异常: {(error as Error).message}</div>;
 
   return (
     <div>
       {global && (
-        <div className="flex gap-4 px-2 py-1 border-b border-[var(--border)] dim">
-          <span>Total MCap <span className="text-[var(--text)]">{fmtBig(global.totalMarketCap)}</span></span>
-          <span>BTC.D <span className="amber">{fmt(global.btcDominance, 1)}%</span></span>
-          <span>ETH.D <span className="amber">{fmt(global.ethDominance, 1)}%</span></span>
+        <div className="flex gap-4 px-2 py-1 border-b border-[var(--border)] dim text-[11px]">
+          <span>总市值 <span className="text-[var(--text)]">{fmtBig(global.totalMarketCap)}</span></span>
+          <span>BTC 市占率 <span className="amber">{fmt(global.btcDominance, 1)}%</span></span>
+          <span>ETH 市占率 <span className="amber">{fmt(global.ethDominance, 1)}%</span></span>
         </div>
       )}
       <table className="data-table">
         <thead>
-          <tr><th>#</th><th>Asset</th><th>Price</th><th>24h%</th><th>MCap</th><th>Vol 24h</th><th>7d</th></tr>
+          <tr><th>#</th><th>资产标的</th><th>最新价格</th><th>24H涨跌</th><th>总市值</th><th>24H成交量</th><th>7日趋势</th></tr>
         </thead>
         <tbody>
           {data.map((c) => (

@@ -42,9 +42,9 @@ export default function OptionsWidget({ widget }: { widget: WidgetInstance }) {
   return (
     <div>
       <div className="flex gap-2 items-center p-1">
-        <span className="dim">Underlying</span>
+        <span className="dim">标的现价</span>
         <span className="amber font-bold">{fmt(data.underlyingPrice)}</span>
-        <span className="dim ml-2">Expiry</span>
+        <span className="dim ml-2">到期日</span>
         <select
           value={expiry ?? data.selectedDate ?? ""}
           onChange={(e) => setExpiry(e.target.value)}
@@ -57,14 +57,14 @@ export default function OptionsWidget({ widget }: { widget: WidgetInstance }) {
       <table className="data-table">
         <thead>
           <tr>
-            <th colSpan={5} className="!text-center up">CALLS</th>
-            <th className="!text-center">STRIKE</th>
-            <th colSpan={5} className="!text-center down">PUTS</th>
+            <th colSpan={5} className="!text-center up">认购期权 (看涨)</th>
+            <th className="!text-center">行权价</th>
+            <th colSpan={5} className="!text-center down">认沽期权 (看跌)</th>
           </tr>
           <tr>
-            <th>Last</th><th>Bid</th><th>Ask</th><th>Vol</th><th>OI · IV</th>
+            <th>最新</th><th>买价</th><th>卖价</th><th>成交量</th><th>持仓·波动率</th>
             <th></th>
-            <th>Last</th><th>Bid</th><th>Ask</th><th>Vol</th><th>OI · IV</th>
+            <th>最新</th><th>买价</th><th>卖价</th><th>成交量</th><th>持仓·波动率</th>
           </tr>
         </thead>
         <tbody>

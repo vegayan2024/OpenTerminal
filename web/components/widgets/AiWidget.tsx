@@ -43,18 +43,18 @@ export default function AiWidget() {
     <div className="flex flex-col h-full">
       <div ref={scrollRef} className="flex-1 overflow-auto p-2 space-y-2 min-h-0">
         {messages.length === 0 && (
-          <div className="dim">
-            Ask about {activeSymbol}, the market, an indicator, or a headline. The current quote is shared as context.
+          <div className="dim text-[12px] leading-relaxed">
+            欢迎使用 AI 投研助手。你可以向我询问关于当前标的 ({activeSymbol}) 的基本面、化工品价差周期、行业趋势或技术形态，当前标的行情将自动作为上下文同步分析。
           </div>
         )}
         {messages.map((m, i) => (
           <div key={i}>
-            <span className={m.role === "user" ? "amber" : "up"}>{m.role === "user" ? "YOU" : "AI"} ›</span>{" "}
+            <span className={m.role === "user" ? "amber font-semibold" : "up font-semibold"}>{m.role === "user" ? "用户" : "AI 投研"} ›</span>{" "}
             <span className="whitespace-pre-wrap">{m.content}</span>
           </div>
         ))}
-        {chat.isPending && <div className="dim">thinking…</div>}
-        {chat.error && <div className="down">{(chat.error as Error).message}</div>}
+        {chat.isPending && <div className="dim">AI 正在深入分析中…</div>}
+        {chat.error && <div className="down">分析请求异常: {(chat.error as Error).message}</div>}
       </div>
       <div className="flex gap-1 p-1 border-t border-[var(--border)] shrink-0">
         <input
@@ -62,9 +62,9 @@ export default function AiWidget() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder={`Ask about ${activeSymbol}…`}
+          placeholder={`询问关于 ${activeSymbol}、化工品产业链或大盘宏观…`}
         />
-        <button className="term-btn" onClick={send}>SEND</button>
+        <button className="term-btn" onClick={send}>发送</button>
       </div>
     </div>
   );

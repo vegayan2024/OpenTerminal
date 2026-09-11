@@ -78,12 +78,12 @@ export default function PortfolioWidget() {
           ))}
         </select>
         <button className={`term-btn ${showTx ? "active" : ""}`} onClick={() => setShowTx(!showTx)}>
-          TRANSACTIONS
+          {showTx ? "查看持仓汇总" : "查看交易流水"}
         </button>
         <span className="ml-auto">
-          MV <span className="amber">{fmt(totals.marketValue)}</span>{" "}
-          <span className="dim">Unrl</span> <span className={pctClass(unrealized)}>{fmt(unrealized)}</span>{" "}
-          <span className="dim">Rlzd</span> <span className={pctClass(totals.realized)}>{fmt(totals.realized)}</span>
+          总市值 <span className="amber">{fmt(totals.marketValue)}</span>{" "}
+          <span className="dim">浮动盈亏</span> <span className={pctClass(unrealized)}>{fmt(unrealized)}</span>{" "}
+          <span className="dim">已实现</span> <span className={pctClass(totals.realized)}>{fmt(totals.realized)}</span>
         </span>
       </div>
 
@@ -94,20 +94,20 @@ export default function PortfolioWidget() {
           if (form.symbol && form.quantity && form.price) addTx.mutate();
         }}
       >
-        <input className="w-20" placeholder="Ticker" value={form.symbol} onChange={(e) => setForm({ ...form, symbol: e.target.value.toUpperCase() })} />
+        <input className="w-24" placeholder="证券代码" value={form.symbol} onChange={(e) => setForm({ ...form, symbol: e.target.value.toUpperCase() })} />
         <select value={form.side} onChange={(e) => setForm({ ...form, side: e.target.value })}>
-          <option>BUY</option><option>SELL</option>
+          <option value="BUY">买入</option><option value="SELL">卖出</option>
         </select>
-        <input className="w-20" placeholder="Qty" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
-        <input className="w-24" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-        <button className="term-btn" type="submit">ADD</button>
+        <input className="w-20" placeholder="数量" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+        <input className="w-24" placeholder="成交单价" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+        <button className="term-btn" type="submit">记一笔</button>
         {addTx.error && <span className="down">{(addTx.error as Error).message}</span>}
       </form>
 
       {!showTx ? (
         <table className="data-table">
           <thead>
-            <tr><th>Sym</th><th>Qty</th><th>Avg Cost</th><th>Last</th><th>Mkt Val</th><th>Unrl PnL</th><th>Rlzd PnL</th></tr>
+            <tr><th>证券代码</th><th>持仓数量</th><th>成本均价</th><th>最新价</th><th>持仓市值</th><th>浮动盈亏</th><th>已实现盈亏</th></tr>
           </thead>
           <tbody>
             {positions.map((p) => {
@@ -118,7 +118,7 @@ export default function PortfolioWidget() {
               return (
                 <tr key={p.symbol}>
                   <td className="font-bold">{p.symbol}</td>
-                  <td>{fmt(p.quantity, 4)}</td>
+                  <td>{fmt(p.quantity, 2)}</td>
                   <td>{fmt(p.avgCost)}</td>
                   <td>{fmt(last)}</td>
                   <td>{fmt(mv)}</td>
@@ -132,7 +132,7 @@ export default function PortfolioWidget() {
       ) : (
         <table className="data-table">
           <thead>
-            <tr><th>Date</th><th>Sym</th><th>Side</th><th>Qty</th><th>Price</th><th></th></tr>
+            <tr><th>成交时间</th><th>证券代码</th><th>交易方向</th><th>数量</th><th>价格</th><th></th></tr>
           </thead>
           <tbody>
             {txs.map((t) => (

@@ -3,22 +3,22 @@
 import { useTerminal, type WidgetType } from "../store/terminal";
 
 const ITEMS: Array<{ type: WidgetType; label: string; key: string }> = [
-  { type: "chart", label: "CHART", key: "⌥1" },
-  { type: "quote", label: "QUOTE", key: "⌥2" },
-  { type: "news", label: "NEWS", key: "⌥3" },
-  { type: "screener", label: "SCREENER", key: "⌥4" },
-  { type: "heatmap", label: "HEATMAP", key: "⌥5" },
-  { type: "crypto", label: "CRYPTO", key: "⌥6" },
-  { type: "options", label: "OPTIONS", key: "⌥7" },
-  { type: "portfolio", label: "PORTFOLIO", key: "⌥8" },
-  { type: "ai", label: "AI ASSIST", key: "⌥9" },
-  { type: "watchlist", label: "WATCHLIST", key: "" },
-  { type: "macro", label: "MACRO", key: "" },
-  { type: "calendar", label: "CALENDAR", key: "" },
-  { type: "insider", label: "INSIDER", key: "" },
-  { type: "tv", label: "LIVE TV", key: "" },
-  { type: "recap", label: "MARKET RECAP", key: "" },
+  { type: "chart", label: "K线图表", key: "⌥1" },
+  { type: "quote", label: "分时行情", key: "⌥2" },
   { type: "commodities", label: "化工品周期", key: "⌥0" },
+  { type: "news", label: "财经快讯", key: "⌥3" },
+  { type: "screener", label: "A股选股器", key: "⌥4" },
+  { type: "heatmap", label: "行业热力图", key: "⌥5" },
+  { type: "watchlist", label: "自选股监控", key: "" },
+  { type: "macro", label: "宏观与指数", key: "" },
+  { type: "options", label: "期权T型报价", key: "⌥7" },
+  { type: "portfolio", label: "投资组合", key: "⌥8" },
+  { type: "ai", label: "AI 投研助手", key: "⌥9" },
+  { type: "calendar", label: "财经日历", key: "" },
+  { type: "insider", label: "重要股东增减持", key: "" },
+  { type: "recap", label: "每日市场复盘", key: "" },
+  { type: "crypto", label: "数字资产", key: "⌥6" },
+  { type: "tv", label: "财经直播", key: "" },
 ];
 
 export default function Sidebar() {
@@ -26,9 +26,9 @@ export default function Sidebar() {
   const resetWorkspace = useTerminal((s) => s.resetWorkspace);
 
   return (
-    <nav className="w-32 bg-[var(--panel)] border-r border-[var(--border)] flex flex-col shrink-0">
+    <nav className="w-36 bg-[var(--panel)] border-r border-[var(--border)] flex flex-col shrink-0">
       <div className="dim px-2 py-1 text-[10px] uppercase tracking-wider border-b border-[var(--border)]">
-        Add widget
+        功能组件库
       </div>
       {ITEMS.map((item) => (
         <button
@@ -45,7 +45,7 @@ export default function Sidebar() {
           onClick={resetWorkspace}
           className="w-full text-left px-2 py-1.5 text-[11px] dim hover:text-[var(--down)]"
         >
-          RESET LAYOUT
+          重置终端布局
         </button>
       </div>
     </nav>

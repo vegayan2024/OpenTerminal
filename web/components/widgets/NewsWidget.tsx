@@ -21,13 +21,13 @@ export default function NewsWidget({ widget }: { widget: WidgetInstance }) {
     <div>
       <div className="flex gap-1 p-1">
         <button className={`term-btn ${mode === "symbol" ? "active" : ""}`} onClick={() => setMode("symbol")}>
-          {symbol}
+          {symbol} 个股资讯
         </button>
         <button className={`term-btn ${mode === "global" ? "active" : ""}`} onClick={() => setMode("global")}>
-          GLOBAL
+          7x24 全市场要闻
         </button>
       </div>
-      {isLoading && <div className="p-2 dim">Loading news…</div>}
+      {isLoading && <div className="p-2 dim">正在加载实时快讯…</div>}
       {data.map((n, i) => (
         <a
           key={i}

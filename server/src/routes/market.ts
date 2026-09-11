@@ -267,12 +267,11 @@ function yahooRange(rangeKey: string): { range: string; interval: string } {
 
 marketRouter.get("/search", async (req, res) => {
   const q = String(req.query.q ?? "").trim();
-  if (!q) return res.json([]);
-  if (chinaMarket.isChinaSymbol(q)) {
-    return res.json([
-      { symbol: q, name: `A股代码 ${q}`, exchange: q.startsWith("6") ? "SSE" : "SZSE", type: "Stock" }
-    ]);
+  const chinaResults = chinaMarket.searchChinaSymbols(q);
+  if (chinaResults.length > 0) {
+    return res.json(chinaResults);
   }
+  if (!q) return res.json(chinaMarket.searchChinaSymbols(""));
   try {
     const data = await cached(`search:${q.toLowerCase()}`, 300_000, () =>
       withFallback([
@@ -402,14 +401,15 @@ const YIELD_SERIES: Array<{ id: string; tenor: string }> = [
 ];
 
 const INDEX_PROXIES: Record<string, string> = {
-  SPY: "S&P 500 (SPY)",
-  DIA: "Dow Jones (DIA)",
-  QQQ: "Nasdaq 100 (QQQ)",
-  IWM: "Russell 2000 (IWM)",
-  GLD: "Gold (GLD)",
-  USO: "WTI Crude (USO)",
-  TLT: "20Y+ Treasury (TLT)",
-  UUP: "Dollar Index (UUP)",
+  "000001": "上证指数 (000001)",
+  "399001": "深证成指 (399001)",
+  "399006": "创业板指 (399006)",
+  "000300": "沪深300 (000300)",
+  "588000": "科创50ETF (588000)",
+  SPY: "标普500 (SPY)",
+  QQQ: "纳斯达克100 (QQQ)",
+  GLD: "黄金ETF (GLD)",
+  USO: "原油ETF (USO)",
 };
 
 marketRouter.get("/macro", async (req, res) => {

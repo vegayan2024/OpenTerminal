@@ -45,8 +45,8 @@ export default function HeatmapWidget() {
       const color = (chg: number) => {
         const clamped = Math.max(-3, Math.min(3, chg));
         return clamped >= 0
-          ? d3.interpolateRgb("#1a1a1a", "#00c853")(clamped / 3)
-          : d3.interpolateRgb("#1a1a1a", "#ff3d3d")(-clamped / 3);
+          ? d3.interpolateRgb("#1a1a1a", "#ff3d3d")(clamped / 3)
+          : d3.interpolateRgb("#1a1a1a", "#00c853")(-clamped / 3);
       };
 
       const svg = d3.select(el).append("svg").attr("width", width).attr("height", height);
@@ -122,7 +122,7 @@ export default function HeatmapWidget() {
     return () => obs.disconnect();
   }, [data, setActiveSymbol]);
 
-  if (error) return <div className="p-2 down">Error: {(error as Error).message}</div>;
-  if (!data) return <div className="p-2 dim">Loading heatmap…</div>;
+  if (error) return <div className="p-2 down">热力图数据异常: {(error as Error).message}</div>;
+  if (!data) return <div className="p-2 dim">正在加载行业板块热力图…</div>;
   return <div ref={ref} className="w-full h-full" />;
 }
